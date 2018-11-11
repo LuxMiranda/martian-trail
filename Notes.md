@@ -17,3 +17,6 @@ Can perhaps construct an environment that probabilisticly strings together these
 
 MCD generally _very_ accurate for our surface needs. See [here](http://www-mars.lmd.jussieu.fr/mars/mcd_training/MCD5.2_Validation.pdf) for details.
 
+"Dena" skylight (-6.084°N 239.061°E) near Arsia Mons is a potentially attractive settlement location due to potentially being a lava tube entrance, proximity to craters for wind turbine utilization, and possible geothermal capability being equatorial (plus lots of sunlight). See [this paper](https://www.lpi.usra.edu/meetings/lpsc2007/pdf/1371.pdf).
+
+
