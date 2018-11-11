@@ -19,4 +19,6 @@ MCD generally _very_ accurate for our surface needs. See [here](http://www-mars.
 
 "Dena" skylight (-6.084°N 239.061°E) near Arsia Mons is a potentially attractive settlement location due to potentially being a lava tube entrance, proximity to craters for wind turbine utilization, and possible geothermal capability being equatorial (plus lots of sunlight). See [this paper](https://www.lpi.usra.edu/meetings/lpsc2007/pdf/1371.pdf).
 
+Wind turbine power is calculated as ``P=0.5*n*A*p*v*v*v``, where ``P`` is power (W), ``n`` is turbine efficiency, ``A`` is the wind mill surface area perpendicular to the wind (m^2), ``p`` is the air density (kg/m^3), and ``v`` is the wind speed (m/s). See [this paper](https://www.hou.usra.edu/meetings/amazonian2018/pdf/4004.pdf)
+
 
