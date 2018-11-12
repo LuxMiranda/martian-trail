@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 # Extract the value from a sol file line.
 # Returns a float.
 def extractVal(line):
@@ -81,14 +79,15 @@ def getScenario(scenario):
     # Return the time-series
     return SOLAR_FLUX, AIR_DENSITY, WIND_SPEED
 
-SOLAR_FLUX_DUST, AIR_DENSITY_DUST, WIND_SPEED_DUST = getScenario('dust-storm')
-SOLAR_FLUX_NORM, AIR_DENSITY_NORM, WIND_SPEED_NORM = getScenario('avg-climate')
-
-plt.title('How sunny is the Dena skylight? (-6.084°N 239.061°E)')
-plt.xlabel('Hours into the Martian year')
-plt.ylabel('Maximum solar flux to surface ($W/m^2$)')
-plt.plot(SOLAR_FLUX_NORM, label='Average stormless year')
-plt.plot(SOLAR_FLUX_DUST, label='Average year with global dust storm')
-plt.legend()
-plt.grid()
-plt.show()
+def sunnyPlot():
+    SOLAR_FLUX_DUST, AIR_DENSITY_DUST, WIND_SPEED_DUST = getScenario('dust-storm')
+    SOLAR_FLUX_NORM, AIR_DENSITY_NORM, WIND_SPEED_NORM = getScenario('avg-climate')
+    import matplotlib.pyplot as plt
+    plt.title('How sunny is the Dena skylight? (-6.084°N 239.061°E)')
+    plt.xlabel('Hours into the Martian year')
+    plt.ylabel('Maximum solar flux to surface ($W/m^2$)')
+    plt.plot(SOLAR_FLUX_NORM, label='Average stormless year')
+    plt.plot(SOLAR_FLUX_DUST, label='Average year with global dust storm')
+    plt.legend()
+    plt.grid()
+    plt.show()
