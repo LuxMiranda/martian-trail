@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sol=547
+sol=634
 while read LS ; do
   sol=$((sol+1))
   rounded=$(printf '%.2f' $LS)
@@ -14,4 +14,4 @@ while read LS ; do
   wget "$urlBase$datafile" -O $filename.txt 2> /dev/null
   echo "Done. Saved to $filename.txt"
   sleep 0.1
-done < ../sols-ls.txt
+done < ../sols.txt

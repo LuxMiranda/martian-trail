@@ -41,28 +41,27 @@ def interpolate(series, START_HOUR, END_HOUR, SMOOTHING_RANGE):
 
 def smooth(series):
     # Range of days over which to smooth data
-    SMOOTHING_RANGE = 10
+    smoothingRange = 10
 
     # Interpolate the storm's formation.
     # Dust storm begins on Sol 371, times 24 hours
     endForm   = 24*371
-    startForm = 24*(371-SMOOTHING_RANGE)
-    series = interpolate(series, startForm, endForm, SMOOTHING_RANGE)
+    startForm = 24*(371-smoothingRange)
+    series = interpolate(series, startForm, endForm, smoothingRange)
 
     # Interpolate the storm's dissipation.
     # Dust storm ends on Sol 668, times 24 hours
+    smoothingRange = 60
     endDis   = 24*668
-    startDis = 24*(668-SMOOTHING_RANGE)
-    series = interpolate(series, startDis, endDis, SMOOTHING_RANGE)
+    startDis = 24*(668-smoothingRange)
+    series = interpolate(series, startDis, endDis, smoothingRange)
 
     return series
-
-
 
 # Fetch all data for the given climate synthetic scenario
 def getScenario(scenario):
     # Initialize time-series to empty lists
-    SOLAR_FLUX, AIR_DENSITY, WIND_SPEED, MAX_FLUX = [],[],[],[]
+    SOLAR_FLUX, AIR_DENSITY, WIND_SPEED = [],[],[]
     # Parse every sol file and add to the lists
     for sol in range(1, 670):
         with open('data/' + scenario + '/' + str(sol).zfill(3) + '.txt') as f:
@@ -72,7 +71,6 @@ def getScenario(scenario):
             SOLAR_FLUX  += S
             AIR_DENSITY += A
             WIND_SPEED  += W
-            MAX_FLUX.append(max(S))
 
     # Smooth transition data if the scenario is dust-storm
     if scenario == 'dust-storm':
@@ -81,13 +79,16 @@ def getScenario(scenario):
         WIND_SPEED  = smooth(WIND_SPEED)
         
     # Return the time-series
-    return SOLAR_FLUX, AIR_DENSITY, WIND_SPEED, MAX_FLUX
+    return SOLAR_FLUX, AIR_DENSITY, WIND_SPEED
 
-SOLAR_FLUX, AIR_DENSITY, WIND_SPEED, MAX_FLUX = getScenario('dust-storm')
+SOLAR_FLUX_DUST, AIR_DENSITY_DUST, WIND_SPEED_DUST = getScenario('dust-storm')
+SOLAR_FLUX_NORM, AIR_DENSITY_NORM, WIND_SPEED_NORM = getScenario('avg-climate')
 
-plt.title('How sunny is Dena?')
-plt.xlabel('Martian Sol')
+plt.title('How sunny is the Dena skylight? (-6.084°N 239.061°E)')
+plt.xlabel('Hours into the Martian year')
 plt.ylabel('Maximum solar flux to surface ($W/m^2$)')
-plt.plot(WIND_SPEED)
+plt.plot(SOLAR_FLUX_NORM, label='Average stormless year')
+plt.plot(SOLAR_FLUX_DUST, label='Average year with global dust storm')
+plt.legend()
 plt.grid()
 plt.show()
