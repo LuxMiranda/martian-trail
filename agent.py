@@ -3,13 +3,11 @@ import simulator as sim
 NUM_EPISODES = 1
 NUM_WAVES    = 10
 
-env = sim.init(NUM_WAVES)
-
 def train():
     # Train over NUM_EPISODES
     for i_episode in range(NUM_EPISODES):
-        # Regenerate a new random environment
-        state = env.regenerate()
+        # Probabilistically generate a new environment
+        state, env = sim.generateEnvironment(NUM_WAVES)
 
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
@@ -17,7 +15,7 @@ def train():
             shipment = getShipment(state)
 
             # Ships the configuration and evaluates its performance
-            newState, reward = env.ship(shipment)
+            newState, reward = sim.ship(shipment, state, env)
 
             # Update the Q-net
             updateQ(newState, reward)

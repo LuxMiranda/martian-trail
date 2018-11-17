@@ -25,4 +25,15 @@ Dust storm scenario does not perfectly fit with climatology scenario, so interpo
 
 For probabilistic scenarios, a 3-sided die is rolled to determine if the next year in the scenario will contain a dust storm. Additionally, there may not be two years in a row with a global dust storm.
 
+State tensors will be 3D:
+    * D1: use last three shipment periods
+    * D2: Divide each shipment period into baker's decameron (11 days) for a total of 69 baker's decamerons
+    * D3: Each baker's decameron is an array with the aggregated state variables for the week
+      * Solar flux (avg)
+      * Wind speed (avg)
+      * Air density (avg)
+      * PV power (sum)
+      * Wind power (sum)
+      * Load (not aggregated)
+      * Battery capacity (not aggregated)
 
