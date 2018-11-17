@@ -21,4 +21,8 @@ MCD generally _very_ accurate for our surface needs. See [here](http://www-mars.
 
 Wind turbine power is calculated as ``P=0.5*n*A*p*v*v*v``, where ``P`` is power (W), ``n`` is turbine efficiency, ``A`` is the wind mill surface area perpendicular to the wind (m^2), ``p`` is the air density (kg/m^3), and ``v`` is the wind speed (m/s). See [this paper](https://www.hou.usra.edu/meetings/amazonian2018/pdf/4004.pdf)
 
-Dust storm scenario does not perfectly fit with climatology scenario, so interpolation over 10 days shall be used.
+Dust storm scenario does not perfectly fit with climatology scenario, so interpolation over 10 days shall be used on the left and 60 days on the right. 
+
+For probabilistic scenarios, a 3-sided die is rolled to determine if the next year in the scenario will contain a dust storm. Additionally, there may not be two years in a row with a global dust storm.
+
+

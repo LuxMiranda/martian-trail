@@ -1,3 +1,0 @@
-import environment
-
-environment.sunnyPlot()

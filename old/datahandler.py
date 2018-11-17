@@ -64,7 +64,7 @@ def getScenario(scenario):
     for sol in range(1, 670):
         with open('data/' + scenario + '/' + str(sol).zfill(3) + '.txt') as f:
             # Strip each line of whitespace and pass it to the parser
-            S,A,W = parse([x.strip() for x in f.readlines()])
+            S,A,W = dataparser.parse([x.strip() for x in f.readlines()])
             # Concatenate the new components to each time-series
             SOLAR_FLUX  += S
             AIR_DENSITY += A
@@ -79,6 +79,7 @@ def getScenario(scenario):
     # Return the time-series
     return SOLAR_FLUX, AIR_DENSITY, WIND_SPEED
 
+# Plot the solar flux at the Dena site versus the two different scenarios
 def sunnyPlot():
     SOLAR_FLUX_DUST, AIR_DENSITY_DUST, WIND_SPEED_DUST = getScenario('dust-storm')
     SOLAR_FLUX_NORM, AIR_DENSITY_NORM, WIND_SPEED_NORM = getScenario('avg-climate')
