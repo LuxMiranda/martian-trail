@@ -25,15 +25,21 @@ Dust storm scenario does not perfectly fit with climatology scenario, so interpo
 
 For probabilistic scenarios, a 3-sided die is rolled to determine if the next year in the scenario will contain a dust storm. Additionally, there may not be two years in a row with a global dust storm.
 
+Each shipment period is 759 martian sols
+
 State tensors will be 3D:
     * D1: use last three shipment periods
-    * D2: Divide each shipment period into baker's decameron (11 days) for a total of 69 baker's decamerons
+    * D2: 
+        * Divide each shipment period into baker's decameron (11 sols) for a total of 69 baker's decamerons.
+        * Also include non-aggregate state variables that persist for the entire shipment period:
+            * Load
+            * Battery capacity
+            * Number of PV systems
+            * Number of turbines
     * D3: Each baker's decameron is an array with the aggregated state variables for the week
-      * Solar flux (avg)
-      * Wind speed (avg)
-      * Air density (avg)
-      * PV power (sum)
-      * Wind power (sum)
-      * Load (not aggregated)
-      * Battery capacity (not aggregated)
+        * Solar flux (avg)
+        * Wind speed (avg)
+        * Air density (avg)
+        * PV power (sum)
+        * Wind power (sum)
 
