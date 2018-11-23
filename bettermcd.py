@@ -706,3 +706,22 @@ uglyList =    [0.5125238221348705
 
 def solToLs(sol):
     return uglyList[sol-1]
+
+def test_mcd():
+    print("Beginning MCD installation test...")
+    val1 = (194.9277801513672, 0.017938636243343353, 0.7502503239837163, 0.0)
+    val2 = (162.69375610351562, 0.02391151152551174, 9.103378191995436, 0.0)
+    val3 = (161.62921142578125, 0.025278810411691666, 6.279380391124694, 0.0)         
+    if getDatum() != val1:
+        print("Failed to retrieve basic MCD data!")
+        return False
+    elif getDatum(lat=430,lon=69,sol=400,local_time=3,scenario='climatology') != val2:
+        print("Failed to retrieve slightly fancy MCD data!")
+        return False
+    elif getDatum(lat=430,lon=69,sol=400,local_time=3,scenario='dust') != val3:
+        print("Failed to retrieve dust storm data! Ensure you've installed strm.tar.gz")
+        return False
+    else:
+        print("SUCCESS: All test cases passed. You may proceed with data pickling!")
+        return True
+
