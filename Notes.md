@@ -43,3 +43,13 @@ State tensors will be 3D:
         * PV power (sum)
         * Wind power (sum)
 
+On second thought, if we're using a table first instead...
+The state of the system can be represented with a simple Markov chain:
+![markov.png](Markov chain with transition probabilities where the states are Martian years)
+
+In this way, we can encode a very small Markov state with perhaps just a few entries:
+*  Current year type (binary: storm or no storm)
+*  Previous _n_ year types (where _n_ is small; say, _n=2_)
+*  The usual suspects:
+    *  Load, battery capacity, number of PV systems and turbines
+    *  Some kind of encoded information about how well the systems have been doing in the environment

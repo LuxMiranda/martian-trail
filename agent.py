@@ -1,4 +1,5 @@
 import simulator as sim
+import matplotlib.pyplot as plt
 
 NUM_EPISODES = 1
 NUM_WAVES    = 10
@@ -22,3 +23,7 @@ def train():
 
             # Update the current state
             state = newState
+
+S, A, W = sim.generateEnvironment()
+plt.plot(S)
+plt.show()
