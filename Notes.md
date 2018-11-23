@@ -53,3 +53,5 @@ In this way, we can encode a very small Markov state with perhaps just a few ent
 *  The usual suspects:
     *  Load, battery capacity, number of PV systems and turbines
     *  Some kind of encoded information about how well the systems have been doing in the environment
+
+TODO:  Separate database interface into a separate file to pickle custom scenarios and reduce data-reading time
