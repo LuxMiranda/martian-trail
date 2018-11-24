@@ -8,7 +8,7 @@ def train():
     # Train over NUM_EPISODES
     for i_episode in range(NUM_EPISODES):
         # Probabilistically generate a new environment
-        state, env = sim.generateEnvironment(NUM_WAVES)
+        state, env = sim.generateSim(num_waves=NUM_WAVES)
 
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
@@ -24,6 +24,6 @@ def train():
             # Update the current state
             state = newState
 
-S, A, W = sim.generateEnvironment()
+state, (S, A, W) = sim.generateSim(num_waves=10, lat=239.061, lon=-6.084)
 plt.plot(S)
 plt.show()
