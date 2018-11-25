@@ -4,12 +4,6 @@ from random import randint
 from bettermcd import getDatum
 from pickle_n_parse import getScenario
 
-#################
-### Constants ###
-#################
-
-SOLS_PER_MARTIAN_YEAR = 669
-
 #############################
 ### Tweak-able parameters ###
 #############################
@@ -18,15 +12,83 @@ SOLS_PER_WAVE = 759
 BACK_FRAMES = 2
 DEFAULT_STORM_CHANCE = 3
 
+PV_EFFICIENCY = 0.3
+TURBINE_EFFICIENCY = 0.9
+WINDMILL_SURFACE_AREA = 1.0
+
+#################
+### Constants ###
+#################
+
+SOLS_PER_MARTIAN_YEAR = 669
+HOURS_PER_WAVE = SOLS_PER_WAVE*24
+
+# Get a solar output timepoint from the state and the current flux
+def solarOutput(state, flux):
+    return PV_EFFICIENCY*flux*state['PV-area']
+
+# Get wind power output timepoint from the state and current density/windspeed
+def windOutput(state, density, windspeed):
+    return 0.5*density*TURBINE_EFFICIENCY*WINDMILL_SURFACE_AREA*(windspeed**3)*state['num-turbines']
+
+# Add the shipment contents to the state, but don't accumulate anything yet
+def addShipment(state, shipment):
+    transientState = state.copy()
+    transientState['PV-area']      += shipment['PV-area'] 
+    transientState['num-turbines'] += shipment['num-turbines'] 
+    return transientState
+
+# Propagate the power generation timeseries
+# with the new shipment in the environment 
+def evaluateShipment(transientState, env):
+    # Calculate start and end points
+    currentHour = transientState['current-sol']*24
+    endHour     = currentHour + HOURS_PER_WAVE
+
+    # Initialize timeseries
+    solarPower,windPower = [],[]
+
+    # Unpack environment
+    solarFlux, airDensity, windSpeed = env
+
+    # Propagate!
+    for hour in range(currentHour, endHour):
+        solarPower.append(solarOutput(transientState, solarFlux[hour]))
+        windPower.append(windOutput(transientState, airDensity[hour], windSpeed[hour]))
+
+    # Return the timeseries
+    return solarPower, windPower
+
+# Update the transient state with appropriate accumulations
+# from the power generation timeseries
+def accumulatePowerState(transientState, powerTimeseries):
+    # TODO
+    newState = transientState.copy()
+    newState['current-sol'] += SOLS_PER_WAVE
+    return newState
+
+# Compute the timestep reward
+def timestepReward(state, newState, powerTimeseries):
+    # TODO
+    return 0.0
+
+# Ship a configuration and evaluate its performance
+def ship(shipment, state, env):
+    transientState = addShipment(state, shipment)
+    powerTimeseries = evaluateShipment(transientState, env)
+    newState = accumulatePowerState(transientState, powerTimeseries)
+    reward = timestepReward(state, newState, powerTimeseries)
+    return newState, reward, powerTimeseries
+
 # Convert number of shipment periods to Martian sols
 def wavesToSols(waves):
     return waves*SOLS_PER_WAVE
 
-# Generate the next state given the environment and previous state
-def makeState(env, prevState=np.array([])):
-    # If prevState was not given, assume initial state
-    #if prevState.size == 0:
-    return prevState
+# Generate the initial state
+def initialState():
+    return { 'PV-area'      : 0.0,
+             'num-turbines' : 0  ,
+             'current-sol'  : 0  }
 
 # Probabilistically generate a new environment of the given length
 def generateEnvironment(num_sols=10*SOLS_PER_WAVE, start_sol=0, lat=0, lon=0):
@@ -66,5 +128,5 @@ def generateEnvironment(num_sols=10*SOLS_PER_WAVE, start_sol=0, lat=0, lon=0):
 def generateSim(num_waves=10, lat=0, lon=0):
     sols  = wavesToSols(num_waves) + wavesToSols(BACK_FRAMES)
     env   = generateEnvironment(num_sols=sols, lat=lat, lon=lon)
-    state = makeState(env)
+    state = initialState()
     return state, env
