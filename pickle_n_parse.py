@@ -1,12 +1,8 @@
 from bettermcd import getDatum
 import pickle
 
-FIRST_SOL_IN_STORM_DATA = 372
-LAST_SOL_IN_STORM_DATA = 668
-SOLS_PER_MARTIAN_YEAR = 669
-
-FORMATION_SMOOTHING = 10
-DISSIPATION_SMOOTHING = 60
+from params import (FIRST_SOL_IN_STORM_DATA, LAST_SOL_IN_STORM_DATA,
+        FORMATION_SMOOTHING, DISSIPATION_SMOOTHING)
 
 def getPickleFilename(scenario, lat, lon):
     return './pickle-jar/' + scenario + '_' + str(lat) + '_' + str(lon) + '.pickle'

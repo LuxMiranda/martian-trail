@@ -1,8 +1,7 @@
 import bettermcd as bmcd
 import pickle_n_parse as pnp
 
-DENA_LAT = 239.061
-DENA_LON = -6.084
+from params import (DENA_LAT, DENA_LON)
 
 print("Beginning martian-trail setup...")
 
