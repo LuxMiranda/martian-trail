@@ -1,3 +1,5 @@
+from __future__ import division
+
 import simulator as sim
 import matplotlib.pyplot as plt
 
@@ -21,7 +23,7 @@ def train():
 
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
-            # Get a shipment configuration by giving the current state to the Q-net 
+            # Get a shipment configuration by giving the current state to the Q-net
             shipment = getShipment(state)
 
             # Ships the configuration and evaluates its performance

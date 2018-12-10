@@ -34,12 +34,12 @@ def windOutput(state, density, windspeed):
 # Add the shipment contents to the state, but don't accumulate anything yet
 def addShipment(state, shipment):
     transientState = state.copy()
-    transientState['PV-area']      += shipment['PV-area'] 
-    transientState['num-turbines'] += shipment['num-turbines'] 
+    transientState['PV-area']      += shipment['PV-area']
+    transientState['num-turbines'] += shipment['num-turbines']
     return transientState
 
 # Propagate the power generation timeseries
-# with the new shipment in the environment 
+# with the new shipment in the environment
 def evaluateShipment(transientState, env):
     # Calculate start and end points
     currentHour = transientState['current-sol']*24
@@ -101,12 +101,12 @@ def generateEnvironment(num_sols=10*SOLS_PER_WAVE, start_sol=0, lat=0, lon=0):
     # Calculate how many years the environment should encompass
     minSols = num_sols + start_sol
     years = math.ceil(float(minSols) / float(SOLS_PER_MARTIAN_YEAR))
-            
+
     Sdust, Adust, Wdust = getScenario('dust', lat, lon)
     Sclim, Aclim, Wclim = getScenario('climatology', lat, lon)
 
     # Append a new yearly timeseries for every year
-    for _ in range(0,years):
+    for _ in range(0,int(years)):
         # Dust storm if you roll a 1!
         if randint(1,DEFAULT_STORM_CHANCE) == 1 and not prevYearStorm:
             prevYearStorm = True
