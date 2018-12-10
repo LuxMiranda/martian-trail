@@ -1,10 +1,9 @@
 import simulator as sim
 import matplotlib.pyplot as plt
+from params import DENA_LAT, DENA_LON
 
 NUM_EPISODES = 1
 NUM_WAVES    = 10
-DENA_LAT     = 239.061
-DENA_LON     = -6.084
 
 def getShipment(state):
     # TODO
@@ -39,6 +38,8 @@ def train():
 
         # FIXME Temporary plotting
         plt.plot(windPower)
+        plt.xlabel("Hour of Martian Year")
+        plt.ylabel("Power output of wind turbines (Watts)")
         plt.show()
 
 if __name__ == '__main__':

@@ -1,27 +1,13 @@
 import numpy as np
 import math
+
 from random import randint
 from bettermcd import getDatum
 from pickle_n_parse import getScenario
 
-#############################
-### Tweak-able parameters ###
-#############################
-
-SOLS_PER_WAVE = 759
-BACK_FRAMES = 2
-DEFAULT_STORM_CHANCE = 3
-
-PV_EFFICIENCY = 0.3
-TURBINE_EFFICIENCY = 0.9
-WINDMILL_SURFACE_AREA = 1.0
-
-#################
-### Constants ###
-#################
-
-SOLS_PER_MARTIAN_YEAR = 669
-HOURS_PER_WAVE = SOLS_PER_WAVE*24
+from params import (PV_EFFICIENCY, TURBINE_EFFICIENCY, WINDMILL_SURFACE_AREA,
+        HOURS_PER_WAVE, SOLS_PER_WAVE, SOLS_PER_MARTIAN_YEAR, EXTRA_YEARS,
+        DEFAULT_STORM_CHANCE)
 
 # Get a solar output timepoint from the state and the current flux
 def solarOutput(state, flux):
@@ -126,7 +112,7 @@ def generateEnvironment(num_sols=10*SOLS_PER_WAVE, start_sol=0, lat=0, lon=0):
 
 # Generate the environment and initial state
 def generateSim(num_waves=10, lat=0, lon=0):
-    sols  = wavesToSols(num_waves) + wavesToSols(BACK_FRAMES)
+    sols  = wavesToSols(num_waves) + wavesToSols(EXTRA_YEARS)
     env   = generateEnvironment(num_sols=sols, lat=lat, lon=lon)
     state = initialState()
     return state, env

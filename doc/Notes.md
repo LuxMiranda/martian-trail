@@ -53,6 +53,29 @@ In this way, we can encode a very small Markov state with perhaps just a few ent
 *  Previous _n_ year types (where _n_ is small; say, _n=2_)
 *  The usual suspects:
     *  Load, battery capacity, number of PV systems and turbines
-    *  Some kind of encoded information about how well the systems have been doing in the environment
+    *  ~~Some kind of encoded information about how well the systems have been doing in the environment~~
 
 TODO:  Separate database interface into a separate file to pickle custom scenarios and reduce data-reading time
+
+State v1:
+    * PV area (m2)
+    * Number of wind turbines
+    * Population/load
+    * Battery capacity
+    * Was there a dust storm since the last shipment? (boolean)
+    * Bucketized Martian date (optional)
+
+
+State v2:
+    * Each state parameter expressed as a ratio related to the total mass
+    * Was there a dust storm since the last shipment? (boolean)
+    * Bucketized Martian date
+
+Actions are a function of mass and also express ratios to that mass
+
+Reward:
+    Terminal: BIG reward for success
+              Minus infinity for killing everyone
+
+    Intermediate: 
+             Accumulate how well the daily reward is being met with MSE
