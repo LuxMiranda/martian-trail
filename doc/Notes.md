@@ -55,8 +55,6 @@ In this way, we can encode a very small Markov state with perhaps just a few ent
     *  Load, battery capacity, number of PV systems and turbines
     *  ~~Some kind of encoded information about how well the systems have been doing in the environment~~
 
-TODO:  Separate database interface into a separate file to pickle custom scenarios and reduce data-reading time
-
 State v1:
     * PV area (m2)
     * Number of wind turbines
@@ -79,3 +77,10 @@ Reward:
 
     Intermediate: 
              Accumulate how well the daily reward is being met with MSE
+
+
+---
+
+Timeline:
+    * 
+
