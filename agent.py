@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, print_function
 
 import simulator as sim
 # import matplotlib.pyplot as plt
@@ -204,12 +204,12 @@ if __name__ == '__main__':
     # Try to load the v-table
     try:
         v_table = load(V_TABLE_PATH)
-        print "Loaded v-table"
+        print("Loaded v-table")
 
     # Initialize a new V table if it couldn't be loaded
     except IOError:
         v_table = initVTable()
-        print "Created new v-table"
+        print("Created new v-table")
 
     action = updateVAndGetAction(v_table, dummy_data[0][0], 150, dummy_data)
     save(v_table, V_TABLE_PATH)

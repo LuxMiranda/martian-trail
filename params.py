@@ -5,6 +5,7 @@ import numpy as np
 #############################
 
 
+
 # Number of seasons in the state variable
 N_SEASONS = 4
 
