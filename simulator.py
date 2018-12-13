@@ -5,19 +5,58 @@ from random import randint
 from bettermcd import getDatum
 from pickle_n_parse import getScenario
 
-from params import (PV_EFFICIENCY, TURBINE_EFFICIENCY, WINDMILL_SURFACE_AREA,
-        HOURS_PER_WAVE, SOLS_PER_WAVE, SOLS_PER_MARTIAN_YEAR, EXTRA_YEARS,
-        DEFAULT_STORM_CHANCE, SHIPMENT_MASS, NUM_WAVES, BUCKETS, DEATH_REWARD,
-        STORM_PROB, NONSTORM_PROB, DENA_LAT, DENA_LON)
+from params import *
+
+# Generate the list of all possible actions
+def getActionSet():
+    # Beautiful list comprehension of all permutations
+    return [ {'pop'   : p ,
+              'solar' : s ,
+              'wind'  : w ,
+              'bat'   : b ,
+              't'     : t }
+              for p in BUCKETS
+              for s in BUCKETS
+              for w in BUCKETS
+              for b in BUCKETS
+              for t in range(NUM_WAVES)
+              if (p + s + w + b) == 1.0 ]
 
 ## Constants ##
 
 # List of all possible actions
 ACTION_SET = getActionSet()
 
-SOLAR_DUST, AIR_DENSITY_DUST, WIND_DUST = getScenario('dust', DENA_LAT, DENA_LON)
-SOLAR_CLIM, AIR_DENSITY_CLIM, WIND_CLIM = getScenario('climatology', DENA_LAT, DENA_LON)
+SOLAR_FLUX_DUST, AIR_DENSITY_DUST, WIND_DUST = getScenario('dust', DENA_LAT, DENA_LON)
+SOLAR_FLUX_CLIM, AIR_DENSITY_CLIM, WIND_CLIM = getScenario('climatology', DENA_LAT, DENA_LON)
+
 ###############
+
+# Accessor functions for the climate timeseries
+def solarFlux(h, yearType):
+    if yearType == 'clim':
+        return SOLAR_FLUX_CLIM[h]
+    elif yearType == 'dust':
+        return SOLAR_FLUX_DUST[h]
+    else:
+        raise Exception("Invalid year type!")
+
+def airDensity(h, yearType):
+    if yearType == 'clim':
+        return AIR_DENSITY_CLIM[h]
+    elif yearType == 'dust':
+        return AIR_DENSITY_DUST[h]
+    else:
+        raise Exception("Invalid year type!")
+
+def windSpeed(h, yearType):
+    if yearType == 'clim':
+        return WIND_CLIM[h]
+    elif yearType == 'dust':
+        return WIND_DUST[h]
+    else:
+        raise Exception("Invalid year type!")
+
 
 # Get a solar output timepoint from the state and the current flux
 def solarOutput(state, flux):
@@ -30,10 +69,10 @@ def windOutput(state, density, windspeed):
 # Add the shipment contents to the state, but don't accumulate anything yet
 def addShipment(state, shipment):
     transientState = state.copy()
-    transientState['PV-area']          += shipment['PV-area'] 
-    transientState['num-turbines']     += shipment['num-turbines'] 
+    transientState['PV_area']          += shipment['PV_area'] 
+    transientState['num_turbines']     += shipment['num_turbines'] 
     transientState['population']       += shipment['population'] 
-    transientState['battery-capacity'] += shipment['battery-capacity'] 
+    transientState['battery_capacity'] += shipment['battery_capacity'] 
     transientState['mass']             += shipment['mass'] 
     return transientState
 
@@ -57,13 +96,6 @@ def evaluateShipment(transientState, env):
 
     # Return the timeseries
     return solarPower, windPower
-
-# Reconstruct the full internal state from the compressed table state
-def reconstruct(state):
-    # TODO
-    reconstructed = state.copy()
-    reconstructed['current-sol'] += SOLS_PER_WAVE
-    return reconstructed
 
 # Ship a configuration and evaluate its performance
 def ship(shipment, state, env):
@@ -132,28 +164,13 @@ def generateSim(num_waves=10, lat=0, lon=0):
     state = initialState()
     return state, env
 
-# Generate the list of all possible actions
-def getActionSet():
-    # Beautiful list comprehension of all permutations
-    return [ {'pop'   : p ,
-              'solar' : s ,
-              'wind'  : w ,
-              'bat'   : b ,
-              't'     : t }
-              for p in BUCKETS
-              for s in BUCKETS
-              for w in BUCKETS
-              for b in BUCKETS
-              for t in range(NUM_WAVES)
-              if (p + s + w + b) == 1.0 ]
-
 # Return a list of (s',a,r) where:
 # s' is a possible next state
 # a  is the action taken to get to s'
 # r  is the reward for taking action a
 def getNextStates(state):
     # If all of our friends are dead, we get nothing
-    if state['pop'] <= 0:
+    if state['population'] <= 0:
         return []
     # Otherwise, use every possible action to get the list of all possible states
     return [ takeAction(state, a) for a in ACTION_SET ]
@@ -170,31 +187,111 @@ def takeAction(state, a):
 # in either scenario
 def deathOccurs(state):
     # Calculate the minimum load for survival
-    minLoad = state['pop']*MIN_LOAD_PER_PERSON
-    # For every hour in the appropriate range
-    for h in getHourRange(state):
-        # Return true if the load is below minimum
-        dustAvail = availablePower(h, state, 'dust')
-        climAvail = availablePower(h, state, 'clim')
-        if dustAvaiil < minLoad or climAvail < minLoad:
+    minLoad = state['pop']*MIN_HOURLY_LOAD_PER_PERSON
+    # Get the available power timeseries
+    dustPower = availablePower(state, 'dust')
+    climPower = availablePower(state, 'clim')
+    # FIXME Lazy runtimecheck LOL
+    if len(dustPower) != len(climPower):
+        raise Exception("sum'in ain't right")
+    # Iterate through both timeseries
+    for i in range(len(dustPower)):
+        if dustPower[i] < minLoad or climPower[i] < minLoad:
             return True
     # Otherwise
     return False
 
+
+# Generate the available power timeseries given a yeartype.
+# Implements a simple battery policy of charging batteries
+# during energy surplus and discharging them during energy deficit.
+# TODO break down this monster function
+def availablePower(state, yearType):
+    # Set battery level to 0
+    batLevel = 0
+    availablePower = []
+    hourlyLoadTarget = MAX_HOURLY_LOAD_PER_PERSON*state['population']
+    # Begin simulating!
+    for h in getHourRange(state):
+        # Generate power
+        s = solarOutput(state, solarFlux(h, yearType))
+        w = windOutput(state, airDensity(h, yearType), windSpeed(h, yearType))
+        output = s + w
+        # If we generated more than neccesarry, try charging batteries
+        if output > hourlyLoadTarget:
+            batLevel += output - hourlyLoadTarget
+            excess = 0
+            # If batteries fully charge, keep them full and keep track of the excess
+            if batLevel > state['battery_capacity']:
+                excess   = batLevel - state['battery_capacity']
+                batLevel = state['battery_capacity']
+            availablePower.append(output + excess) 
+        # If we precisely meet the target, do nothing with batteries
+        elif output == hourlyLoadTarget:
+            availablePower.append(output)
+        # If the output is less than we need, try discharging batteries
+        elif output < hourlyLoadTarget:
+            # If output + batLevel is less than or as much as we need, fully discharge
+            if output + batLevel <= hourlyLoadTarget:
+                availablePower.append(output + batLevel)
+                batLevel = 0
+            # Otherwise, only discharge as much as we need to meet the target
+            elif output + batLevel > hourlyLoadTarget:
+                difference = hourlyLoadTarget - output
+                availablePower.append(output + difference)
+                batLevel -= difference
+    return availablePower
+
+# Generate a list of each hour in a mission. If
+# starting_hours_only is True, only the first hour of each day is included.
+# Special logic is used to handle going beyond the start of a new year.
+def getHourRange(state, starting_hours_only=False):
+    # Compute starting day
+    startingDay = int((state['season']/NUM_SEASONS)*SOLS_PER_MARTIAN_YEAR)
+    # Modulo is used to avoid indexing out of bounds
+    if starting_hours_only:
+        return [ (day % SOLS_PER_MARTIAN_YEAR)*24
+                 for day in range(startingDay, startingDay+SOLS_PER_WAVE) ]
+    else:
+        return [ (hour % (SOLS_PER_MARTIAN_YEAR*24))
+                 for hour in range(startingDay*24, ((startingDay+SOLS_PER_WAVE)*24)) ]
+
+# Compute the daily reward given:
+# h          : starting hour
+# availPower : available power timeseries
+# load       : the maximal load
+def dailyReward(h, availPower, load):
+    totalDayPower = sum(availPower[h:h+24]) # TODO confirm correct indexing
+    if totalDayPower < load:
+        return 0
+    elif totalDayPower == load:
+        # Return the inverse square of the smallest non-zero difference
+        return INTERNAL_POWER_DIFF**(-2.0)
+    elif totalDayPower > load:
+        return (totalDayPower - load)**(-2.0)
+
+
+# Determine the intermediate reward of a given state with
+# the given yeartype 'clim' or 'dust'
 def intermediateReward(state, yearType):
-    reward = 0
+    reward  = 0
+    load = state['population']*MAX_DAILY_LOAD_PER_PERSON
+
+    # Fetch the available power timeseries
+    availPower = availablePower(state, yearType)
+
     # For every hour in the appropriate range
-    for h in getHourRange(state)
-        # Compute the hourly reward
-        reward += hourlyReward(h, state, yearType)
+    for h in getHourRange(state, starting_hours_only=True):
+        # Compute the daily reward
+        reward += dailyReward(h, availPower, load)
     # Return the summation
     return reward
+
 
 # The expected reward of the given
 # state in both dust and non-dust scenarios
 def expectedReward(state):
-    return STORM_PROB*intermediateReward(state, 'dust')
-        + NONSTORM_PROB*intermediateReward(state, 'clim')
+    return STORM_PROB*intermediateReward(state, 'dust') + NONSTORM_PROB*intermediateReward(state, 'clim')
 
 # Calculate the reward for a terminal state
 def terminalReward(state):
@@ -202,6 +299,19 @@ def terminalReward(state):
         return DEATH_REWARD
     else:
         return TERMINAL_SUCCESS_REWARD
+
+# Reconstruct a tableState of ratios into a more useful
+# internal state of mass and actual values
+def reconstruct(tableState):
+    currentMass = tableState['t']*SHIPMENT_MASS
+    return {'population'       : (tableState['pop']*currentMass)/(HUMAN_MASS),
+            'PV_area'          : (tableState['solar']*currentMass)/(PV_MASS_PER_M2),
+            'num_turbines'     : (tableState['wind']*currentMass)/(TURBINE_MASS),
+            'battery_capacity' : (tableState['bat']*currentMass)/(BATTERY_MASS),
+            'season'           : tableState['season'],
+            'mass'             : currentMass,
+            't'                : tableState['t'] }
+
 
 # Calculate the reward given a new state
 def getReward(tableState):

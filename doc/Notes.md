@@ -81,6 +81,5 @@ Reward:
 
 ---
 
-Timeline:
-    * 
-
+Potential error:
+    In computing the intermediate reward, beginning with season 3 in a dust storm year will extend into another dust storm, potentially throwing off reward calculations.
