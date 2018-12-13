@@ -30,6 +30,8 @@ ACTION_SET = getActionSet()
 SOLAR_FLUX_DUST, AIR_DENSITY_DUST, WIND_DUST = getScenario('dust', DENA_LAT, DENA_LON)
 SOLAR_FLUX_CLIM, AIR_DENSITY_CLIM, WIND_CLIM = getScenario('climatology', DENA_LAT, DENA_LON)
 
+AVAIL_POWER = {}
+
 ###############
 
 # Accessor functions for the climate timeseries
@@ -113,15 +115,24 @@ def ship(shipment, state, env):
 def wavesToSols(waves):
     return waves*SOLS_PER_WAVE
 
-# Generate the initial state
-def initialState():
-    return { 'PV-area'          : 0.0   ,
-             'num-turbines'     : 0     ,
-             'battery-capacity' : 0.0   ,
-             'population'       : 0     ,
-             'storm-since-last' : False ,
-             'mass'             : 0     ,
-             'current-sol'      : 0     }
+# Generate the initial table state
+def blankTableState():
+    return { 'pop'    : 0.0 ,
+             'solar'  : 0.0 ,
+             'wind'   : 0.0 ,
+             'bat'    : 0.0 ,
+             'season' : 0   ,
+             't'      : 0   }
+
+# Generate a test table state
+def testTableState():
+    return { 'pop'    : 0.1 ,
+             'solar'  : 0.3 ,
+             'wind'   : 0.3 ,
+             'bat'    : 0.3 ,
+             'season' : 3   ,
+             't'      : 1   }
+
 
 # Probabilistically generate a new environment of the given length
 def generateEnvironment(num_sols=10*SOLS_PER_WAVE, start_sol=0, lat=0, lon=0):
@@ -169,11 +180,8 @@ def generateSim(num_waves=10, lat=0, lon=0):
 # a  is the action taken to get to s'
 # r  is the reward for taking action a
 def getNextStates(state):
-    # If all of our friends are dead, we get nothing
-    if state['population'] <= 0:
-        return []
-    # Otherwise, use every possible action to get the list of all possible states
-    return [ takeAction(state, a) for a in ACTION_SET ]
+    # Use every possible action to get the list of all possible states
+    return [ takeAction(state, a) for a in ACTION_SET if a['t'] > state['t'] ]
 
 # Given an action of (s',a,r) where:
 # s' is the new state
@@ -201,12 +209,25 @@ def deathOccurs(state):
     # Otherwise
     return False
 
+# Memoize the power generation timeseries
+def availablePower(state, yearType):
+    global AVAIL_POWER
+    key = str(state)
+
+    if key not in AVAIL_POWER:
+        AVAIL_POWER[key] = {}
+        AVAIL_POWER[key][yearType] = _availablePower(state, yearType)
+
+    if yearType not in AVAIL_POWER[key]:
+        AVAIL_POWER[key][yearType] = _availablePower(state, yearType)
+    
+    return AVAIL_POWER[key][yearType]
 
 # Generate the available power timeseries given a yeartype.
 # Implements a simple battery policy of charging batteries
 # during energy surplus and discharging them during energy deficit.
 # TODO break down this monster function
-def availablePower(state, yearType):
+def _availablePower(state, yearType):
     # Set battery level to 0
     batLevel = 0
     availablePower = []
@@ -312,6 +333,10 @@ def reconstruct(tableState):
             'mass'             : currentMass,
             't'                : tableState['t'] }
 
+
+# Check to see if the given state is a terminal one
+def isTerminal(state):
+    return state['t'] == NUM_WAVES - 1
 
 # Calculate the reward given a new state
 def getReward(tableState):

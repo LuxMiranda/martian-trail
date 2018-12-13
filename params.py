@@ -61,6 +61,10 @@ INTERNAL_POWER_DIFF = 0.1
 # possible mission start dates.
 NUM_SEASONS = 4
 
+# Maximum loads as functions of the population
+MAX_HOURLY_LOAD_PER_PERSON = 100
+MAX_DAILY_LOAD_PER_PERSON  = 100*24
+
 #################
 ### Constants ###
 #################
