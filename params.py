@@ -29,10 +29,11 @@ TURBINE_EFFICIENCY    = 0.9
 # Surface area per each turbine's windmill
 WINDMILL_SURFACE_AREA = 1.0
 # Mass of each turbine (kg)
-TURBINE_MASS          = 10.0
+TURBINE_MASS          = 100.0
 
-# Mass of each battery (kg)
-BATTERY_MASS = 10.0
+# Energy density of the batteries (J / kg)
+BATTERY_JOULES_PER_KG = 100.0
+
 
 # Mass of each human (kg)
 HUMAN_MASS = 85.0
@@ -54,16 +55,20 @@ DEATH_REWARD = -100
 # Large terminal reward for a successful run
 TERMINAL_SUCCESS_REWARD = 100
 
-# Smallest difference for internal tracking of power
+# Smallest difference for internal tracking of power (Joules, I guess)
 INTERNAL_POWER_DIFF = 0.1
 
 # Number of seasons to divide the Martian year into for
 # possible mission start dates.
 NUM_SEASONS = 4
 
-# Maximum loads as functions of the population
-MAX_HOURLY_LOAD_PER_PERSON = 100
-MAX_DAILY_LOAD_PER_PERSON  = 100*24
+# Maximum loads as functions of the population (joules)
+# Based on estimate of 5kW/person
+MIN_HOURLY_LOAD_PER_PERSON = 18490000
+MIN_DAILY_LOAD_PER_PERSON  = MIN_HOURLY_LOAD_PER_PERSON*24
+
+MAX_HOURLY_LOAD_PER_PERSON = MIN_HOURLY_LOAD_PER_PERSON*3
+MAX_DAILY_LOAD_PER_PERSON  = MAX_HOURLY_LOAD_PER_PERSON*24
 
 #################
 ### Constants ###
@@ -75,6 +80,8 @@ FIRST_SOL_IN_STORM_DATA = 372
 LAST_SOL_IN_STORM_DATA  = 668
 SOLS_PER_MARTIAN_YEAR   = 669
 HOURS_PER_WAVE          = SOLS_PER_WAVE*24
+
+EARTH_SECONDS_IN_A_MARS_HOUR = 3698.96
 
 # Latitude and longitude of the Dena Skylight at Asria Mons
 DENA_LAT = 239.061

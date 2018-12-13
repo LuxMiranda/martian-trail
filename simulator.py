@@ -60,13 +60,13 @@ def windSpeed(h, yearType):
         raise Exception("Invalid year type!")
 
 
-# Get a solar output timepoint from the state and the current flux
+# Get a solar output timepoint from the state and the current flux (Joules)
 def solarOutput(state, flux):
-    return PV_EFFICIENCY*flux*state['PV_area']
+    return PV_EFFICIENCY*flux*state['PV_area']*EARTH_SECONDS_IN_A_MARS_HOUR
 
-# Get wind power output timepoint from the state and current density/windspeed
+# Get wind power output timepoint from the state and current density/windspeed (Joules)
 def windOutput(state, density, windspeed):
-    return 0.5*density*TURBINE_EFFICIENCY*WINDMILL_SURFACE_AREA*(windspeed**3)*state['num_turbines']
+    return 0.5*density*TURBINE_EFFICIENCY*WINDMILL_SURFACE_AREA*(windspeed**3)*state['num_turbines']*EARTH_SECONDS_IN_A_MARS_HOUR
 
 # Add the shipment contents to the state, but don't accumulate anything yet
 def addShipment(state, shipment):
@@ -192,21 +192,17 @@ def takeAction(state, a):
     return (newState, a, getReward(newState))
 
 # Determine if a death occurs in the given (reconstructed) state
-# in either scenario
-def deathOccurs(state):
+# in the given scenario
+def deathOccurs(state, yearType):
     # Calculate the minimum load for survival
-    minLoad = state['pop']*MIN_HOURLY_LOAD_PER_PERSON
+    minLoad = state['population']*MIN_HOURLY_LOAD_PER_PERSON
     # Get the available power timeseries
-    dustPower = availablePower(state, 'dust')
-    climPower = availablePower(state, 'clim')
-    # FIXME Lazy runtimecheck LOL
-    if len(dustPower) != len(climPower):
-        raise Exception("sum'in ain't right")
-    # Iterate through both timeseries
-    for i in range(len(dustPower)):
-        if dustPower[i] < minLoad or climPower[i] < minLoad:
+    power = availablePower(state, yearType)
+    # Iterate through the timeseries
+    for p in power:
+        # Return true if the load falls below the minimum
+        if p < minLoad:
             return True
-    # Otherwise
     return False
 
 # Memoize the power generation timeseries
@@ -295,6 +291,9 @@ def dailyReward(h, availPower, load):
 # Determine the intermediate reward of a given state with
 # the given yeartype 'clim' or 'dust'
 def intermediateReward(state, yearType):
+    if deathOccurs(state, yearType):
+        return DEATH_REWARD
+
     reward  = 0
     load = state['population']*MAX_DAILY_LOAD_PER_PERSON
 
@@ -316,7 +315,7 @@ def expectedReward(state):
 
 # Calculate the reward for a terminal state
 def terminalReward(state):
-    if deathOccurs(state):
+    if deathOccurs(state, 'clim') or deathOccurs(state, 'dust'):
         return DEATH_REWARD
     else:
         return TERMINAL_SUCCESS_REWARD
@@ -328,7 +327,7 @@ def reconstruct(tableState):
     return {'population'       : (tableState['pop']*currentMass)/(HUMAN_MASS),
             'PV_area'          : (tableState['solar']*currentMass)/(PV_MASS_PER_M2),
             'num_turbines'     : (tableState['wind']*currentMass)/(TURBINE_MASS),
-            'battery_capacity' : (tableState['bat']*currentMass)/(BATTERY_MASS),
+            'battery_capacity' : (tableState['bat']*currentMass)*BATTERY_JOULES_PER_KG,
             'season'           : tableState['season'],
             'mass'             : currentMass,
             't'                : tableState['t'] }
