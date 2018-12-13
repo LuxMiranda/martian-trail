@@ -2,7 +2,8 @@ from __future__ import division
 
 import simulator as sim
 # import matplotlib.pyplot as plt
-from params import DENA_LAT, DENA_LON, V_INIT_MEAN, V_INIT_VAR, N_BINS, N_SEASONS, N_SHIPMENTS, DISCOUNT
+from params import DENA_LAT, DENA_LON, V_INIT_MEAN, V_INIT_VAR, BUCKETS, N_SEASONS, NUM_WAVES, DISCOUNT,\
+    V_TABLE_PATH, DEATH_REWARD
 import numpy as np
 import pickle
 
@@ -11,9 +12,10 @@ NUM_WAVES = 10
 
 
 def initVTable():
+    n_bins = len(BUCKETS)
     # Order of axes is shipment, population, solar, wind, battery, season, storm
     v_table = np.random.normal(loc=V_INIT_MEAN, scale=V_INIT_VAR,
-                               size=(N_SHIPMENTS, N_BINS+1, N_BINS+1, N_BINS+1, N_BINS+1, N_SEASONS, 2))
+                               size=(NUM_WAVES, n_bins, n_bins, n_bins, n_bins, N_SEASONS, 2))
     return v_table
 
 
@@ -21,12 +23,17 @@ def initVTable():
 def updateVAndGetAction(v_table, state, reward, next_states):
     # Unpack state
     t = state["t"]
-    pop = int(state["pop"] * N_BINS)
-    solar = int(state["solar"] * N_BINS)
-    wind = int(state["wind"] * N_BINS)
-    bat = int(state["bat"] * N_BINS)
+    pop = np.digitize(state["pop"], BUCKETS, right=True)
+    solar = np.digitize(state["solar"], BUCKETS, right=True)
+    wind = np.digitize(state["wind"], BUCKETS, right=True)
+    bat = np.digitize(state["bat"], BUCKETS, right=True)
     season = state["season"]
     storm = state["storm"]
+
+    # Everyone's dead. Negative terminal reward for this state
+    if next_states == []:
+        v_table[t][pop][solar][wind][bat][season][storm] = DEATH_REWARD
+
 
     max_e_v = -10000
     max_i = -1
@@ -54,10 +61,10 @@ def updateVAndGetAction(v_table, state, reward, next_states):
             # Unpack this sister state
             next_state, next_action, next_reward = sister_state
             n_t = next_state["t"]
-            n_pop = int(next_state["pop"] * N_BINS)
-            n_solar = int(next_state["solar"] * N_BINS)
-            n_wind = int(next_state["wind"] * N_BINS)
-            n_bat = int(next_state["bat"] * N_BINS)
+            n_pop = np.digitize(next_state["pop"], BUCKETS, right=True)
+            n_solar = np.digitize(next_state["solar"], BUCKETS, right=True)
+            n_wind = np.digitize(next_state["wind"], BUCKETS, right=True)
+            n_bat = np.digitize(next_state["bat"], BUCKETS, right=True)
             n_season = next_state["season"]
             n_storm = 1 if next_state["storm"] else 0
 
@@ -93,8 +100,13 @@ def train(v_table):
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
             # Get possible next states
-            next_states = sim.getNextStates()
+            next_states = sim.getNextStates(state)
+
+            # If there are no next states, that probably means everyone died. Update the v-table with a negative
+            # terminal reward and break to a new episode
             shipment = updateVAndGetAction(v_table, state, next_states, reward)
+            if next_states == []:
+                break
 
             # Ships the configuration and evaluates its performance
             state, reward = sim.ship(shipment, state, env)
@@ -123,9 +135,9 @@ dummy_data = [
         {
             "t": 5,
             "pop": 1.0,
-            "solar": .2,
-            "wind": .1,
-            "bat": .4,
+            "solar": 0.0,
+            "wind": 0.0,
+            "bat": 0.0,
             "season": 3,
             "storm": True
         },
@@ -187,7 +199,17 @@ def load(fpath):
 
 
 if __name__ == '__main__':
-    v_table = initVTable()
-    print(v_table.size)
+    v_table = None
+
+    # Try to load the v-table
+    try:
+        v_table = load(V_TABLE_PATH)
+        print "Loaded v-table"
+
+    # Initialize a new V table if it couldn't be loaded
+    except IOError:
+        v_table = initVTable()
+        print "Created new v-table"
+
     action = updateVAndGetAction(v_table, dummy_data[0][0], 150, dummy_data)
-    save(v_table, "pickle-jar/v_table.pck")
+    save(v_table, V_TABLE_PATH)
