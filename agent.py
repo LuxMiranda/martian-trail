@@ -211,5 +211,6 @@ if __name__ == '__main__':
         v_table = initVTable()
         print("Created new v-table")
 
-    action = updateVAndGetAction(v_table, dummy_data[0][0], 150, dummy_data)
+    #action = updateVAndGetAction(v_table, dummy_data[0][0], 150, dummy_data)
+    train(v_table)
     save(v_table, V_TABLE_PATH)
