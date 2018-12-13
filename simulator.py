@@ -117,12 +117,13 @@ def wavesToSols(waves):
 
 # Generate the initial table state
 def blankTableState():
-    return { 'pop'    : 0.0 ,
-             'solar'  : 0.0 ,
-             'wind'   : 0.0 ,
-             'bat'    : 0.0 ,
-             'season' : 0   ,
-             't'      : 0   }
+    return { 'pop'    : 0.0  ,
+             'solar'  : 0.0  ,
+             'wind'   : 0.0  ,
+             'bat'    : 0.0  ,
+             'season' : 0    ,
+             'storm'  : False,
+             't'      : 0    }
 
 # Generate a test table state
 def testTableState():
@@ -330,8 +331,14 @@ def reconstruct(tableState):
             'battery_capacity' : (tableState['bat']*currentMass)*BATTERY_JOULES_PER_KG,
             'season'           : tableState['season'],
             'mass'             : currentMass,
-            't'                : tableState['t'] }
+            't'                : tableState['t'],
+            'storm'            : tableState['storm']}
 
+
+def rollForStorm(state):
+    if state['storm']:
+        return False
+    return (np.random.randint(0, DEFAULT_STORM_CHANCE) == 0)
 
 # Check to see if the given state is a terminal one
 def isTerminal(state):
@@ -342,8 +349,11 @@ def getReward(tableState):
     state = reconstruct(tableState)
     if isTerminal(state):
         return terminalReward(state)
+    elif state['storm']:
+        return intermediateReward(state, 'dust')
     else:
-        return expectedReward(state)
+        return intermediateReward(state, 'clim')
+
 
 # Perform an action and get the updated state
 def updateState(currentState, a):

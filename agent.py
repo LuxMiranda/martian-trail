@@ -20,7 +20,7 @@ def initVTable():
 
 
 # Updates the v-table slot for state. Returns the change in the value
-def updateVAndGetAction(v_table, state, reward, next_states):
+def updateVAndGetAction(v_table, state, next_states, reward):
     # Unpack state
     t = state["t"]
     pop = np.digitize(state["pop"], BUCKETS, right=True)
@@ -94,12 +94,13 @@ def updateVAndGetAction(v_table, state, reward, next_states):
 def train(v_table):
     # Train over NUM_EPISODES
     for i_episode in range(NUM_EPISODES):
-        # Probabilistically generate a new environment
+        # Generate a blank initial state
         state = sim.blankTableState()
         reward = 0
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
             # Get possible next states
+            print('Generating next states for state: ' + str(state))
             next_states = sim.getNextStates(state)
 
             # If there are no next states, that probably means everyone died. Update the v-table with a negative
@@ -108,8 +109,16 @@ def train(v_table):
             if next_states == []:
                 break
 
-            # Ships the configuration and evaluates its performance
-            state = updateState(state, shipment)
+            print('Taking action: ' + str(shipment))
+            
+            # Ships the configuration
+            state = sim.updateState(state, shipment)
+            
+            # Probabilistically assign either a storm or no storm to the next state
+            state['storm'] = sim.rollForStorm(state)
+
+            # Update the reward using the new state
+            reward = sim.getReward(state)
 
 
 dummy_data = [
