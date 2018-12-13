@@ -95,7 +95,7 @@ def train(v_table):
     # Train over NUM_EPISODES
     for i_episode in range(NUM_EPISODES):
         # Probabilistically generate a new environment
-        state, env = sim.generateSim(num_waves=NUM_WAVES, lat=DENA_LAT, lon=DENA_LON)
+        state = sim.blankTableState()
         reward = 0
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
@@ -109,7 +109,7 @@ def train(v_table):
                 break
 
             # Ships the configuration and evaluates its performance
-            state, reward = sim.ship(shipment, state, env)
+            state = updateState(state, shipment)
 
 
 dummy_data = [

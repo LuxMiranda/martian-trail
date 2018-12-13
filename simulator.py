@@ -183,7 +183,7 @@ def getNextStates(state):
     # Use every possible action to get the list of all possible states
     return [ takeAction(state, a) for a in ACTION_SET if a['t'] > state['t'] ]
 
-# Given an action of (s',a,r) where:
+# Given an action return (s',a,r) where:
 # s' is the new state
 # a  is the given action that was used to get to s'
 # r  is the reward for taking action a
