@@ -4,6 +4,17 @@ import numpy as np
 ### Tweak-able parameters ###
 #############################
 
+
+# Number of seasons in the state variable
+N_SEASONS = 4
+
+# Discount rate for next time step
+DISCOUNT = .9
+
+# Mean and Variance to initialize V-Table
+V_INIT_MEAN = 100
+V_INIT_VAR = 5
+
 # Number of missions
 NUM_WAVES           = 10
 
