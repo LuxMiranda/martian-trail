@@ -45,9 +45,8 @@ TURBINE_MASS          = 100.0
 # Energy density of the batteries (J / kg)
 BATTERY_JOULES_PER_KG = 100.0
 
-
 # Mass of each human (kg)
-HUMAN_MASS = 85.0
+HUMAN_MASS = 80.0
 
 # Number of days it takes for a global storm to form
 FORMATION_SMOOTHING   = 10
@@ -55,6 +54,7 @@ FORMATION_SMOOTHING   = 10
 DISSIPATION_SMOOTHING = 60
 
 # Mass of each shipment (in kg)
+# Based on the payload-to-Mars capacity of the SpaceX BFR
 SHIPMENT_MASS = 100000
 
 # List of possible values for state ratios
