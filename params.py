@@ -4,7 +4,8 @@ import numpy as np
 ### Tweak-able parameters ###
 #############################
 
-
+# Path to pickled v-table
+V_TABLE_PATH = "pickle-jar/v_table.pck"
 
 # Number of seasons in the state variable
 N_SEASONS = 4
