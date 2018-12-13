@@ -44,8 +44,9 @@ WINDMILL_SURFACE_AREA = 1.0
 # Mass of each turbine (kg)
 TURBINE_MASS          = 100.0
 
-# Energy density of the batteries (J / kg)
-BATTERY_JOULES_PER_KG = 100.0
+# Energy density of the batteries (J / kg). 
+# Same approximate energy density of a Tesla Powerpack 2 
+BATTERY_JOULES_PER_KG = 445000
 
 # Mass of each human (kg)
 HUMAN_MASS = 80.0
