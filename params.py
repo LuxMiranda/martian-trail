@@ -4,6 +4,8 @@ import numpy as np
 ### Tweak-able parameters ###
 #############################
 
+# File path for the persisted v-table
+V_TABLE_PATH = "pickle-jar/v-table.pck"
 
 # Number of seasons in the state variable
 N_SEASONS = 4
@@ -12,8 +14,8 @@ N_SEASONS = 4
 DISCOUNT = .9
 
 # Mean and Variance to initialize V-Table
-V_INIT_MEAN = 100
-V_INIT_VAR = 5
+V_INIT_MEAN = 10
+V_INIT_VAR = 1
 
 # Number of missions
 NUM_WAVES           = 10
