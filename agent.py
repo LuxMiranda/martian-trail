@@ -115,13 +115,14 @@ def train(v_table):
             
             # Ships the configuration
             state = sim.updateState(state, shipment)
-            
+
             # Probabilistically assign either a storm or no storm to the next state
             state['storm'] = sim.rollForStorm(state)
 
             # Update the reward using the new state
             reward = sim.getReward(state)
             totalReward += reward
+
             if sim.isTerminal(state):
                 t = state["t"]
                 pop = np.digitize(state["pop"], BUCKETS, right=True)
@@ -130,7 +131,13 @@ def train(v_table):
                 bat = np.digitize(state["bat"], BUCKETS, right=True)
                 season = state["season"]
                 storm = state["storm"]
-                v_table[t][pop][solar][wind][bat][season][storm] = TERMINAL_SUCCESS_REWARD
+                if sim.notEnoughFolks(sim.reconstruct(state)):
+                    v_table[t][pop][solar][wind][bat][season][storm] = DEATH_REWARD
+                    reward += DEATH_REWARD
+                else:
+                    v_table[t][pop][solar][wind][bat][season][storm] = TERMINAL_SUCCESS_REWARD
+                    reward += TERMINAL_SUCCESS_REWARD
+                break
 
         print('Finished episode ' + str(i_episode) + ' with total reward ' + str(totalReward) + '!')
         with open("rewards.txt", "a") as f:

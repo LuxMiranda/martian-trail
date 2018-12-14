@@ -74,7 +74,7 @@ BUCKETS = np.arange(0.0,1.1,0.1)
 # Negative reward accrued for following below life support levels
 DEATH_REWARD = -100
 
-PEOPLE_REWARD = 20
+PEOPLE_REWARD = 10
 
 # Large terminal reward for a successful run
 TERMINAL_SUCCESS_REWARD = 100
@@ -88,10 +88,10 @@ NUM_SEASONS = 4
 
 # Maximum loads as functions of the population (joules)
 # Based on estimate of 5kW/person
-MIN_HOURLY_LOAD_PER_PERSON = 18490000
+MIN_HOURLY_LOAD_PER_PERSON = 0 # 18490000
 MIN_DAILY_LOAD_PER_PERSON  = MIN_HOURLY_LOAD_PER_PERSON*24
 
-MAX_HOURLY_LOAD_PER_PERSON = MIN_HOURLY_LOAD_PER_PERSON*3
+MAX_HOURLY_LOAD_PER_PERSON = 18490000*5
 MAX_DAILY_LOAD_PER_PERSON  = MAX_HOURLY_LOAD_PER_PERSON*24
 
 TERMINAL_POPULATION = 1000

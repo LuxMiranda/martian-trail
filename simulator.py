@@ -20,7 +20,7 @@ def getActionSet():
               for w in BUCKETS
               for b in BUCKETS
               for t in range(NUM_WAVES)
-              if (s + w + b) == 1.0 ]
+              if abs((p + s + w + b) - 1.0) <= 0.1 ]
 
 ## Constants ##
 
@@ -207,6 +207,8 @@ def takeAction(state, a):
 # Determine if a death occurs in the given (reconstructed) state
 # in the given scenario
 def deathOccurs(state, yearType):
+    # FIXME
+    return False
     # Calculate the minimum load for survival
     minLoad = state['population']*MIN_HOURLY_LOAD_PER_PERSON
     # Get the available power timeseries
@@ -386,7 +388,7 @@ def updateState(currentState, a):
     # Copy the state because references are devil spawn amirite
     newState = currentState.copy()
     # Update each ratio!
-    newState['pop']   = round(updateRatio('pop',   currentState, a), 2)
+    newState['pop']   = round(updateRatio('pop',   currentState, a), 3)
     newState['solar'] = round(updateRatio('solar', currentState, a), 1)
     newState['wind']  = round(updateRatio('wind',  currentState, a), 1)
     newState['bat']   = round(updateRatio('bat',   currentState, a), 1)
