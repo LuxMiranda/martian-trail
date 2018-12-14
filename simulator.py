@@ -311,6 +311,9 @@ def intermediateReward(state, yearType):
     if deathOccurs(state, yearType):
         return DEATH_REWARD
 
+    if state['population'] == 0.0:
+        return 0
+
     reward  = 0
     load = state['population']*MAX_DAILY_LOAD_PER_PERSON
 
@@ -330,9 +333,13 @@ def intermediateReward(state, yearType):
 def expectedReward(state):
     return STORM_PROB*intermediateReward(state, 'dust') + NONSTORM_PROB*intermediateReward(state, 'clim')
 
+def notEnoughFolks(state):
+    # FIXME please this is hack
+    return abs(state['population'] - TERMINAL_POPULATION) > 50
+
 # Calculate the reward for a terminal state
 def terminalReward(state):
-    if deathOccurs(state, 'clim') or deathOccurs(state, 'dust'):
+    if deathOccurs(state, 'clim') or deathOccurs(state, 'dust') or notEnoughFolks(state):
         return DEATH_REWARD
     else:
         return TERMINAL_SUCCESS_REWARD
@@ -376,10 +383,10 @@ def updateState(currentState, a):
     # Copy the state because references are devil spawn amirite
     newState = currentState.copy()
     # Update each ratio!
-    newState['pop']   = round(updateRatio('pop',   currentState, a), 1)
-    newState['solar'] = round(updateRatio('solar', currentState, a), 1)
-    newState['wind']  = round(updateRatio('wind',  currentState, a), 1)
-    newState['bat']   = round(updateRatio('bat',   currentState, a), 1)
+    newState['pop']   = round(updateRatio('pop',   currentState, a), 3)
+    newState['solar'] = round(updateRatio('solar', currentState, a), 2)
+    newState['wind']  = round(updateRatio('wind',  currentState, a), 2)
+    newState['bat']   = round(updateRatio('bat',   currentState, a), 2)
     # Increment the timestep
     newState['t'] += 1
     return newState

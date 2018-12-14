@@ -6,7 +6,7 @@ from params import *
 import numpy as np
 import pickle
 
-NUM_EPISODES = 10
+NUM_EPISODES = 100
 NUM_WAVES = 10
 
 
@@ -97,6 +97,7 @@ def train(v_table):
         # Generate a blank initial state
         state = sim.blankTableState()
         reward = 0
+        totalReward = 0
         # Begin sending cargo waves
         for wave in range(NUM_WAVES):
             # Get possible next states
@@ -119,6 +120,7 @@ def train(v_table):
 
             # Update the reward using the new state
             reward = sim.getReward(state)
+            totalReward += reward
             if sim.isTerminal(state):
                 t = state["t"]
                 pop = np.digitize(state["pop"], BUCKETS, right=True)
@@ -128,7 +130,10 @@ def train(v_table):
                 season = state["season"]
                 storm = state["storm"]
                 v_table[t][pop][solar][wind][bat][season][storm] = TERMINAL_SUCCESS_REWARD
-    print('Finished episode ' + str(i_episode) + '!')
+
+        print('Finished episode ' + str(i_episode) + ' with total reward ' + str(totalReward) + '!')
+        with open("rewards.txt", "a") as f:
+            f.write(str(totalReward) + '\n')
 
 dummy_data = [
     (

@@ -35,7 +35,7 @@ DEFAULT_STORM_CHANCE = 3.0
 # Efficiency of the PV systems
 PV_EFFICIENCY         = 0.3
 # Mass per square meter of PV surface area (kg)
-PV_MASS_PER_M2        = 10.0
+PV_MASS_PER_M2        = 20.0
 
 # Efficiency of the wind turbines
 TURBINE_EFFICIENCY    = 0.9
@@ -83,6 +83,8 @@ MIN_DAILY_LOAD_PER_PERSON  = MIN_HOURLY_LOAD_PER_PERSON*24
 
 MAX_HOURLY_LOAD_PER_PERSON = MIN_HOURLY_LOAD_PER_PERSON*3
 MAX_DAILY_LOAD_PER_PERSON  = MAX_HOURLY_LOAD_PER_PERSON*24
+
+TERMINAL_POPULATION = 1000
 
 #################
 ### Constants ###
