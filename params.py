@@ -35,14 +35,14 @@ DEFAULT_STORM_CHANCE = 3.0
 # Efficiency of the PV systems
 PV_EFFICIENCY         = 0.3
 # Mass per square meter of PV surface area (kg)
-PV_MASS_PER_M2        = 20.0
+PV_MASS_PER_M2        = 10.0
 
 # Efficiency of the wind turbines
 TURBINE_EFFICIENCY    = 0.9
 # Surface area per each turbine's windmill
 WINDMILL_SURFACE_AREA = 1.0
 # Mass of each turbine (kg)
-TURBINE_MASS          = 100.0
+TURBINE_MASS          = 20.0
 
 # Energy density of the batteries (J / kg). 
 # Same approximate energy density of a Tesla Powerpack 2 
@@ -57,8 +57,16 @@ FORMATION_SMOOTHING   = 10
 DISSIPATION_SMOOTHING = 60
 
 # Mass of each shipment (in kg)
-# Based on the payload-to-Mars capacity of the SpaceX BFR
-SHIPMENT_MASS = 100000
+# Based on the payload-to-Mars capacity of two SpaceX BFRs
+SHIPMENT_MASS = 300000
+
+# Min and max people sendable on one shipment
+MIN_HUMANS = 5
+MAX_HUMANS = 200
+
+MIN_HUMAN_RATIO = (MIN_HUMANS*HUMAN_MASS)/SHIPMENT_MASS
+MAX_HUMAN_RATIO = (MAX_HUMANS*HUMAN_MASS)/SHIPMENT_MASS
+HUMAN_BUCKETS = np.arange(0.0, MAX_HUMAN_RATIO+MIN_HUMAN_RATIO, MIN_HUMAN_RATIO)
 
 # List of possible values for state ratios
 BUCKETS = np.arange(0.0,1.1,0.1)

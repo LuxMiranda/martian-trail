@@ -15,12 +15,12 @@ def getActionSet():
               'wind'  : w ,
               'bat'   : b ,
               't'     : t }
-              for p in BUCKETS
+              for p in HUMAN_BUCKETS
               for s in BUCKETS
               for w in BUCKETS
               for b in BUCKETS
               for t in range(NUM_WAVES)
-              if (p + s + w + b) == 1.0 ]
+              if (s + w + b) == 1.0 ]
 
 ## Constants ##
 
@@ -384,9 +384,9 @@ def updateState(currentState, a):
     newState = currentState.copy()
     # Update each ratio!
     newState['pop']   = round(updateRatio('pop',   currentState, a), 3)
-    newState['solar'] = round(updateRatio('solar', currentState, a), 2)
-    newState['wind']  = round(updateRatio('wind',  currentState, a), 2)
-    newState['bat']   = round(updateRatio('bat',   currentState, a), 2)
+    newState['solar'] = round(updateRatio('solar', currentState, a), 1)
+    newState['wind']  = round(updateRatio('wind',  currentState, a), 1)
+    newState['bat']   = round(updateRatio('bat',   currentState, a), 1)
     # Increment the timestep
     newState['t'] += 1
     return newState

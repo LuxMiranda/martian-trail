@@ -6,7 +6,7 @@ from params import *
 import numpy as np
 import pickle
 
-NUM_EPISODES = 100
+NUM_EPISODES = 10
 NUM_WAVES = 10
 
 
@@ -108,6 +108,7 @@ def train(v_table):
             # terminal reward and break to a new episode
             shipment = updateVAndGetAction(v_table, state, next_states, reward)
             if next_states == []:
+                print("No states from here!")
                 break
 
             print('Taking action: ' + str(shipment))
