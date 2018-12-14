@@ -58,7 +58,7 @@ DISSIPATION_SMOOTHING = 60
 
 # Mass of each shipment (in kg)
 # Based on the payload-to-Mars capacity of two SpaceX BFRs
-SHIPMENT_MASS = 300000
+SHIPMENT_MASS = 200000
 
 # Min and max people sendable on one shipment
 MIN_HUMANS = 5
@@ -66,7 +66,7 @@ MAX_HUMANS = 200
 
 MIN_HUMAN_RATIO = (MIN_HUMANS*HUMAN_MASS)/SHIPMENT_MASS
 MAX_HUMAN_RATIO = ((MAX_HUMANS*HUMAN_MASS)/SHIPMENT_MASS)*NUM_WAVES
-HUMAN_BUCKETS = np.arange(MIN_HUMAN_RATIO, MAX_HUMAN_RATIO+MIN_HUMAN_RATIO, MIN_HUMAN_RATIO)
+HUMAN_BUCKETS   = np.arange(MIN_HUMAN_RATIO, MAX_HUMAN_RATIO+MIN_HUMAN_RATIO, 0.04)
 
 # List of possible values for state ratios
 BUCKETS = np.arange(0.0,1.1,0.1)

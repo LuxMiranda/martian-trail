@@ -386,7 +386,7 @@ def updateState(currentState, a):
     # Copy the state because references are devil spawn amirite
     newState = currentState.copy()
     # Update each ratio!
-    newState['pop']   = round(updateRatio('pop',   currentState, a), 3)
+    newState['pop']   = round(updateRatio('pop',   currentState, a), 2)
     newState['solar'] = round(updateRatio('solar', currentState, a), 1)
     newState['wind']  = round(updateRatio('wind',  currentState, a), 1)
     newState['bat']   = round(updateRatio('bat',   currentState, a), 1)
