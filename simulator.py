@@ -311,10 +311,13 @@ def intermediateReward(state, yearType):
     if deathOccurs(state, yearType):
         return DEATH_REWARD
 
+    reward  = 0
+
     if state['population'] == 0.0:
         return 0
+    else:
+        reward += PEOPLE_REWARD
 
-    reward  = 0
     load = state['population']*MAX_DAILY_LOAD_PER_PERSON
 
     # Fetch the available power timeseries
