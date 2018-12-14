@@ -57,12 +57,12 @@ FORMATION_SMOOTHING   = 10
 DISSIPATION_SMOOTHING = 60
 
 # Mass of each shipment (in kg)
-# Based on the payload-to-Mars capacity of two SpaceX BFRs
-SHIPMENT_MASS = 200000
+# Based on the payload-to-Mars capacity of SpaceX BFR
+SHIPMENT_MASS = 100000
 
 # Min and max people sendable on one shipment
 MIN_HUMANS = 5
-MAX_HUMANS = 200
+MAX_HUMANS = 100
 
 MIN_HUMAN_RATIO = (MIN_HUMANS*HUMAN_MASS)/SHIPMENT_MASS
 MAX_HUMAN_RATIO = ((MAX_HUMANS*HUMAN_MASS)/SHIPMENT_MASS)*NUM_WAVES

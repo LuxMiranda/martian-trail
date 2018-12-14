@@ -340,7 +340,7 @@ def expectedReward(state):
 
 def notEnoughFolks(state):
     # FIXME please this is hack
-    return abs(state['population'] - TERMINAL_POPULATION) > 50
+    return TERMINAL_POPULATION - state['population'] > -50
 
 # Calculate the reward for a terminal state
 def terminalReward(state):
