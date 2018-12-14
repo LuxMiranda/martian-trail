@@ -14,8 +14,8 @@ N_SEASONS = 4
 DISCOUNT = .9
 
 # Mean and Variance to initialize V-Table
-V_INIT_MEAN = 100
-V_INIT_VAR = 5
+V_INIT_MEAN = 1
+V_INIT_VAR = .1
 
 # Number of missions
 NUM_WAVES           = 10
@@ -44,8 +44,8 @@ WINDMILL_SURFACE_AREA = 1.0
 # Mass of each turbine (kg)
 TURBINE_MASS          = 20.0
 
-# Energy density of the batteries (J / kg). 
-# Same approximate energy density of a Tesla Powerpack 2 
+# Energy density of the batteries (J / kg).
+# Same approximate energy density of a Tesla Powerpack 2
 BATTERY_JOULES_PER_KG = 445000
 
 # Mass of each human (kg)
