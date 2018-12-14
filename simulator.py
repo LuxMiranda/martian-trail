@@ -182,7 +182,19 @@ def generateSim(num_waves=10, lat=0, lon=0):
 # r  is the reward for taking action a
 def getNextStates(state):
     # Use every possible action to get the list of all possible states
-    return [ takeAction(state, a) for a in ACTION_SET if a['t'] > state['t'] ]
+    nextStates = []
+    for a in ACTION_SET:
+        if a['t'] == state['t'] + 1:
+            nextState = updateState(state, a)
+            if not deathOccurs(reconstruct(nextState), 'clim'):
+                stateClim = state.copy()
+                stateClim['storm'] = False
+                nextStates.append(takeAction(stateClim, a))
+            if not deathOccurs(reconstruct(nextState), 'dust'):
+                stateStorm = state.copy()
+                stateStorm['storm'] = True
+                nextStates.append(takeAction(stateStorm, a))
+    return nextStates
 
 # Given an action return (s',a,r) where:
 # s' is the new state

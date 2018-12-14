@@ -33,6 +33,7 @@ def updateVAndGetAction(v_table, state, next_states, reward):
     # Everyone's dead. Negative terminal reward for this state
     if next_states == []:
         v_table[t][pop][solar][wind][bat][season][storm] = DEATH_REWARD
+        return
 
 
     max_e_v = -10000
