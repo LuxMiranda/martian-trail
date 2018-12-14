@@ -218,10 +218,14 @@ def deathOccurs(state, yearType):
             return True
     return False
 
+
+def toKey(state):
+    return str(state['population']) + str(state['PV_area']) + str(state['num_turbines']) + str(state['battery_capacity'])
+
 # Memoize the power generation timeseries
 def availablePower(state, yearType):
     global AVAIL_POWER
-    key = str(state)
+    key = toKey(state)
 
     if key not in AVAIL_POWER:
         AVAIL_POWER[key] = {}
@@ -372,10 +376,10 @@ def updateState(currentState, a):
     # Copy the state because references are devil spawn amirite
     newState = currentState.copy()
     # Update each ratio!
-    newState['pop']   = updateRatio('pop',   currentState, a)
-    newState['solar'] = updateRatio('solar', currentState, a)
-    newState['wind']  = updateRatio('wind',  currentState, a)
-    newState['bat']   = updateRatio('bat',   currentState, a)
+    newState['pop']   = round(updateRatio('pop',   currentState, a), 1)
+    newState['solar'] = round(updateRatio('solar', currentState, a), 1)
+    newState['wind']  = round(updateRatio('wind',  currentState, a), 1)
+    newState['bat']   = round(updateRatio('bat',   currentState, a), 1)
     # Increment the timestep
     newState['t'] += 1
     return newState
@@ -387,3 +391,4 @@ def updateRatio(value, currentState, a):
     currentMass = currentState['t']*SHIPMENT_MASS
     # Recalculate the ratio given the new ratio and shipment mass
     return ((currentState[value]*currentMass)+(a[value]*SHIPMENT_MASS))/(currentMass + SHIPMENT_MASS)
+

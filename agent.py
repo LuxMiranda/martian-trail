@@ -2,12 +2,11 @@ from __future__ import division, print_function
 
 import simulator as sim
 # import matplotlib.pyplot as plt
-from params import DENA_LAT, DENA_LON, V_INIT_MEAN, V_INIT_VAR, BUCKETS, N_SEASONS, NUM_WAVES, DISCOUNT,\
-    V_TABLE_PATH, DEATH_REWARD
+from params import *
 import numpy as np
 import pickle
 
-NUM_EPISODES = 1
+NUM_EPISODES = 10
 NUM_WAVES = 10
 
 
@@ -120,7 +119,16 @@ def train(v_table):
 
             # Update the reward using the new state
             reward = sim.getReward(state)
-
+            if sim.isTerminal(state):
+                t = state["t"]
+                pop = np.digitize(state["pop"], BUCKETS, right=True)
+                solar = np.digitize(state["solar"], BUCKETS, right=True)
+                wind = np.digitize(state["wind"], BUCKETS, right=True)
+                bat = np.digitize(state["bat"], BUCKETS, right=True)
+                season = state["season"]
+                storm = state["storm"]
+                v_table[t][pop][solar][wind][bat][season][storm] = TERMINAL_SUCCESS_REWARD
+    print('Finished episode ' + str(i_episode) + '!')
 
 dummy_data = [
     (
